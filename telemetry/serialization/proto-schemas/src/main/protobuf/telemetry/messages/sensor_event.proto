@@ -12,36 +12,36 @@ message SensorEventProto {
     google.protobuf.Timestamp timestamp = 2;
     string hubId = 3;
     oneof payload{
-        MotionSensorEvent motion_sensor_event = 4;
-        TemperatureSensorEvent temperature_sensor_event = 5;
-        LightSensorEvent light_sensor_event = 6;
-        ClimateSensorEvent climate_sensor_event = 7;
-        SwitchSensorEvent switch_sensor_event =8;
+        MotionSensorProto motion_sensor_event = 4;
+        TemperatureSensorProto temperature_sensor_event = 5;
+        LightSensorProto light_sensor_event = 6;
+        ClimateSensorProto climate_sensor_event = 7;
+        SwitchSensorProto switch_sensor_event =8;
     }
 }
 
-message MotionSensorEvent{
+message MotionSensorProto{
     int32 link_quality = 1;
     bool motion = 2;
     int32 voltage =3;
 }
 
-message TemperatureSensorEvent{
+message TemperatureSensorProto{
     int32 temperature_c = 1;
     int32 temperature_f = 2;
 }
 
-message LightSensorEvent{
+message LightSensorProto{
     int32 link_quality = 1;
     int32 luminosity = 2;
 }
 
-message ClimateSensorEvent{
+message ClimateSensorProto{
     int32 temperature_c = 1;
     int32 humidity = 2;
     int32 co2_level = 3;
 }
 
-message SwitchSensorEvent{
+message SwitchSensorProto{
     bool state = 1;
 }

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.contant;
 
-public enum Operation {
+public enum ConditionOperation {
     EQUALS,
     GREATER_THAN,
     LOWER_THAN

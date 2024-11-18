@@ -145,11 +145,11 @@ public class CollectorService {
         for (ScenarioCondition sc : hubEvent.getConditions()) {
             conditionAvros.add(new ScenarioConditionAvro(sc.getSensorId()
                     , DeviceTypeAvro.valueOf(sc.getType().name())
-                    , ConditionOperationAvro.valueOf(sc.getOperation().name())
+                    , ConditionOperationAvro.valueOf(sc.getConditionOperation().name())
                     , sc.getValue()));
         }
         List<DeviceActionAvro> deviceActionAvros = new ArrayList<>();
-        for (DeviceAction da : hubEvent.getActions()) {
+        for (DeviceActionEvent da : hubEvent.getActions()) {
             deviceActionAvros.add(new DeviceActionAvro(da.getSensorId(), ActionTypeAvro.valueOf(da.getType().name()),
                     da.getValue()));
         }
