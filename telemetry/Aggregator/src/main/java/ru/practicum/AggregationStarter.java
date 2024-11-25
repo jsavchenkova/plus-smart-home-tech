@@ -5,15 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.apache.kafka.common.serialization.VoidDeserializer;
 import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.stereotype.Component;
 import ru.practicum.serialize.SensorEventDeserializer;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Класс AggregationStarter, ответственный за запуск агрегации данных.
@@ -28,6 +29,8 @@ public class AggregationStarter {
     private static final Duration consume_attempt_timeout = Duration.ofMillis(1000);
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
+    private static final Map<String, SensorsSnapshotAvro> snapshots = new HashMap<>();
+
     /**
      * Метод для начала процесса агрегации данных.
      * Подписывается на топики для получения событий от датчиков,
@@ -35,7 +38,7 @@ public class AggregationStarter {
      */
     public void start() {
         Properties config = getPropertiesSensor();
-        KafkaConsumer<Void, String> consumer = new KafkaConsumer<>(config);
+        KafkaConsumer<Void, SensorEventAvro> consumer = new KafkaConsumer<>(config);
         // регистрируем хук, в котором вызываем метод wakeup.
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
@@ -47,11 +50,35 @@ public class AggregationStarter {
 
             // Цикл обработки событий
             while (true) {
-                ConsumerRecords<Void, String> records = consumer.poll(consume_attempt_timeout);
+                ConsumerRecords<Void, SensorEventAvro> records = consumer.poll(consume_attempt_timeout);
 
                 int count = 0;
-                for (ConsumerRecord<Void, String> record : records) {
+                for (ConsumerRecord<Void, SensorEventAvro> record : records) {
+                    Optional<SensorsSnapshotAvro> result = Optional.empty();
                     // обрабатываем очередную запись
+                    if(snapshots.containsKey(record.value().getHubId())){
+                        SensorsSnapshotAvro snapshot = snapshots.get(record.value().getHubId());
+                        if(snapshot.getSensorsState().containsKey(record.value().getId())){
+                            if(!snapshot.getSensorsState().get(record.value().getId()).equals(record.value().getPayload())){
+
+                                snapshot.getSensorsState().put(record.value().getId(), (SensorStateAvro) record.value().getPayload());
+                                result = Optional.of(snapshot);
+                            }
+                        } else{
+                            snapshot.getSensorsState().put(record.value().getId(), (SensorStateAvro)record.value().getPayload());
+                            result = Optional.of(snapshot);
+                        }
+
+                    }else{
+                        SensorsSnapshotAvro snapshot =  new SensorsSnapshotAvro();
+                        snapshot.setHubId(record.value().getHubId());
+
+                        snapshot.setSensorsState(new HashMap<>());
+                        snapshot.getSensorsState().put(record.value().getId(), (SensorStateAvro) record.value().getPayload());
+                        snapshots.put(record.value().getHubId(), snapshot);
+                        result = Optional.of(snapshot);
+                    }
+
 
                     // фиксируем оффсеты обработанных записей, если нужно
                     manageOffsets(record, count, consumer);
@@ -88,14 +115,14 @@ public class AggregationStarter {
     private Properties getPropertiesSensor() {
         Properties config = new Properties();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidSerializer.class);
+        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
         config.put(ConsumerConfig.CLIENT_ID_CONFIG, "SomeConsumer");
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "some.group.id");
         return config;
     }
 
-    private static void manageOffsets(ConsumerRecord<Void, String> record, int count, KafkaConsumer<Void, String> consumer) {
+    private static void manageOffsets(ConsumerRecord<Void, SensorEventAvro> record, int count, KafkaConsumer<Void, SensorEventAvro> consumer) {
         // обновляем текущий оффсет для топика-партиции
         currentOffsets.put(
                 new TopicPartition(record.topic(), record.partition()),
