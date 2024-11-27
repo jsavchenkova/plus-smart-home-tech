@@ -3,12 +3,17 @@ package ru.practicum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.VoidDeserializer;
 import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.stereotype.Component;
 import ru.practicum.serialize.SensorEventDeserializer;
+import ru.practicum.serialize.SensorsSnapshotSrializer;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
@@ -25,7 +30,7 @@ import java.util.*;
 public class AggregationStarter {
 
     // ... объявление полей и конструктора ...
-    private static final List<String> topics = List.of("telemetry.sensors.v1");
+    private static final List<String> topics = List.of("telemetry.sensors.v1","telemetry.hubs.v1");
     private static final Duration consume_attempt_timeout = Duration.ofMillis(1000);
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
@@ -37,7 +42,7 @@ public class AggregationStarter {
      * формирует снимок их состояния и записывает в кафку.
      */
     public void start() {
-        Properties config = getPropertiesSensor();
+        Properties config = getPropertiesConsumerSensor();
         KafkaConsumer<Void, SensorEventAvro> consumer = new KafkaConsumer<>(config);
         // регистрируем хук, в котором вызываем метод wakeup.
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
@@ -79,6 +84,14 @@ public class AggregationStarter {
                         result = Optional.of(snapshot);
                     }
 
+                    if(result.isPresent()){
+                        Properties properties = getPropertiesProducerSensor();
+                        Producer<String, SensorsSnapshotAvro> producer = new KafkaProducer<>(properties);
+                        String snapshotTopic = "telemetry.snapshots.v1";
+                        ProducerRecord<String, SensorsSnapshotAvro> snapshotRecord = new ProducerRecord<>(snapshotTopic, result.get());
+                        producer.send(snapshotRecord);
+                        producer.close();
+                    }
 
                     // фиксируем оффсеты обработанных записей, если нужно
                     manageOffsets(record, count, consumer);
@@ -112,13 +125,21 @@ public class AggregationStarter {
         }
     }
 
-    private Properties getPropertiesSensor() {
+    private Properties getPropertiesConsumerSensor() {
         Properties config = new Properties();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
         config.put(ConsumerConfig.CLIENT_ID_CONFIG, "SomeConsumer");
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "some.group.id");
+        return config;
+    }
+
+    private Properties getPropertiesProducerSensor(){
+        Properties config = new Properties();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorsSnapshotSrializer.class);
         return config;
     }
 

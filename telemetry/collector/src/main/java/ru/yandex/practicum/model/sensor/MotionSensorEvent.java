@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.yandex.practicum.contant.SensorEventType;
 
+import java.time.Instant;
+
 import static ru.yandex.practicum.contant.SensorEventType.MOTION_SENSOR_EVENT;
 
 @Getter

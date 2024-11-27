@@ -1,33 +1,34 @@
-package ru.yandex.practicum.serialize.sensor;
+package ru.practicum.serialize;
 
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificDatumWriter;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.yandex.practicum.exception.SerializationException;
-import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HexFormat;
 
-public class MotionSensorAvroSerializer implements Serializer<MotionSensorAvro> {
-    private static final Logger log = LoggerFactory.getLogger(MotionSensorAvroSerializer.class);
+public class SensorsSnapshotSrializer implements Serializer<SensorsSnapshotAvro> {
+    private static final Logger log = LoggerFactory.getLogger(SensorsSnapshotSrializer.class);
     private static final HexFormat hexFormat = HexFormat.ofDelimiter(":");
 
+
     @Override
-    public byte[] serialize(String topic, MotionSensorAvro event) {
+    public byte[] serialize(String topic, SensorsSnapshotAvro event) {
         if (event == null) {
             return null;
         }
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-            DatumWriter<MotionSensorAvro> datumWriter = new SpecificDatumWriter<>(MotionSensorAvro.class);
+            DatumWriter<SensorsSnapshotAvro> datumWriter = new SpecificDatumWriter<>(SensorsSnapshotAvro.class);
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
 
             datumWriter.write(event, encoder);
