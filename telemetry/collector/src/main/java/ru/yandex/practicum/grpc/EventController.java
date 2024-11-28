@@ -5,10 +5,12 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
+
 import net.devh.boot.grpc.server.service.GrpcService;
 import ru.yandex.practicum.grpc.telemetry.collector.CollectorControllerGrpc;
 import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.LightSensorProto;
+import ru.yandex.practicum.grpc.telemetry.event.MotionSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.model.sensor.handler.SensorEventHandler;
 
@@ -42,6 +44,7 @@ public class EventController extends CollectorControllerGrpc.CollectorController
     @Override
     public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
         try {
+
             // проверяем, есть ли обработчик для полученного события
             if (sensorEventHandlers.containsKey(request.getPayloadCase())) {
                 // если обработчик найден, передаём событие ему на обработку

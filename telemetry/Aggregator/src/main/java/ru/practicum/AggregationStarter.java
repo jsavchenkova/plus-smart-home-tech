@@ -19,6 +19,7 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -55,10 +56,12 @@ public class AggregationStarter {
 
             // Цикл обработки событий
             while (true) {
+
                 ConsumerRecords<Void, SensorEventAvro> records = consumer.poll(consume_attempt_timeout);
 
                 int count = 0;
                 for (ConsumerRecord<Void, SensorEventAvro> record : records) {
+
                     Optional<SensorsSnapshotAvro> result = Optional.empty();
                     // обрабатываем очередную запись
                     if(snapshots.containsKey(record.value().getHubId())){
@@ -77,9 +80,10 @@ public class AggregationStarter {
                     }else{
                         SensorsSnapshotAvro snapshot =  new SensorsSnapshotAvro();
                         snapshot.setHubId(record.value().getHubId());
+                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()),record.value());
 
                         snapshot.setSensorsState(new HashMap<>());
-                        snapshot.getSensorsState().put(record.value().getId(), (SensorStateAvro) record.value().getPayload());
+                        snapshot.getSensorsState().put(record.value().getId(), stateAvro);
                         snapshots.put(record.value().getHubId(), snapshot);
                         result = Optional.of(snapshot);
                     }

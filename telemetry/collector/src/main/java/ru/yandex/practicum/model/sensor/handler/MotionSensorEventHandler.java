@@ -28,15 +28,6 @@ public class MotionSensorEventHandler implements SensorEventHandler{
         // получаем данные датчика движения
         MotionSensorProto motionSensor = event.getMotionSensor();
         System.out.println("Наличие движения: " + motionSensor.getMotion());
-        MotionSensorEvent mevent = new MotionSensorEvent();
-        mevent.setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds(), event.getTimestamp().getNanos()));
-        mevent.setId(event.getId());
-        mevent.setHubId(event.getHubId());
-        mevent.setMotion(event.getMotionSensor().getMotion());
-        mevent.setVoltage(event.getMotionSensor().getVoltage());
-        mevent.setLinkQuality(event.getMotionSensor().getLinkQuality());
 
-
-        service.processingSensors( mevent);
     }
 }

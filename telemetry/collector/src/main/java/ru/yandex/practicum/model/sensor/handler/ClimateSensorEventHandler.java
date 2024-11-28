@@ -1,17 +1,27 @@
 package ru.yandex.practicum.model.sensor.handler;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.model.sensor.ClimateSensorEvent;
+import ru.yandex.practicum.service.CollectorService;
+
+import java.time.Instant;
 
 import static ru.yandex.practicum.grpc.telemetry.event.SensorEventProto.PayloadCase.CLIMATE_SENSOR;
 
 @Component
+@RequiredArgsConstructor
 public class ClimateSensorEventHandler implements SensorEventHandler{
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
         return CLIMATE_SENSOR;
     }
+
+    private final CollectorService service;
 
     @Override
     public void handle(SensorEventProto event) {
@@ -19,5 +29,15 @@ public class ClimateSensorEventHandler implements SensorEventHandler{
         // получаем данные климатического датчика
         ClimateSensorProto climateSensor = event.getClimateSensor();
         System.out.println("Влажность воздуха: " + climateSensor.getHumidity());
+
+        ClimateSensorEvent sensorEvent = new ClimateSensorEvent();
+        sensorEvent.setId(event.getId());
+        sensorEvent.setHubId(event.getHubId());
+        sensorEvent.setTimestamp(Instant.now());
+        sensorEvent.setHumidity(event.getClimateSensor().getHumidity());
+        sensorEvent.setTemperatureC(event.getClimateSensor().getTemperatureC());
+        sensorEvent.setCo2Level(event.getClimateSensor().getCo2Level());
+
+        service.processingSensors(sensorEvent);
     }
 }
