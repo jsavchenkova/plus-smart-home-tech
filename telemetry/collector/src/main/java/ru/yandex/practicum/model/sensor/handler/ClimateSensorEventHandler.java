@@ -33,7 +33,7 @@ public class ClimateSensorEventHandler implements SensorEventHandler{
         ClimateSensorEvent sensorEvent = new ClimateSensorEvent();
         sensorEvent.setId(event.getId());
         sensorEvent.setHubId(event.getHubId());
-        sensorEvent.setTimestamp(Instant.now());
+        sensorEvent.setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds()));
         sensorEvent.setHumidity(event.getClimateSensor().getHumidity());
         sensorEvent.setTemperatureC(event.getClimateSensor().getTemperatureC());
         sensorEvent.setCo2Level(event.getClimateSensor().getCo2Level());

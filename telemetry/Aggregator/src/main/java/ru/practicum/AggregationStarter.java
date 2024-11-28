@@ -66,21 +66,22 @@ public class AggregationStarter {
                     // обрабатываем очередную запись
                     if(snapshots.containsKey(record.value().getHubId())){
                         SensorsSnapshotAvro snapshot = snapshots.get(record.value().getHubId());
+                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()),record.value().getPayload());
                         if(snapshot.getSensorsState().containsKey(record.value().getId())){
-                            if(!snapshot.getSensorsState().get(record.value().getId()).equals(record.value().getPayload())){
-
-                                snapshot.getSensorsState().put(record.value().getId(), (SensorStateAvro) record.value().getPayload());
+                            if(!snapshot.getSensorsState().get(record.value().getId()).equals(stateAvro)){
+                                snapshot.getSensorsState().put(record.value().getId(), stateAvro);
                                 result = Optional.of(snapshot);
                             }
                         } else{
-                            snapshot.getSensorsState().put(record.value().getId(), (SensorStateAvro)record.value().getPayload());
+                            snapshot.getSensorsState().put(record.value().getId(), stateAvro);
                             result = Optional.of(snapshot);
                         }
 
                     }else{
                         SensorsSnapshotAvro snapshot =  new SensorsSnapshotAvro();
                         snapshot.setHubId(record.value().getHubId());
-                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()),record.value());
+                        snapshot.setTimestamp(Instant.ofEpochSecond(record.timestamp()));
+                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()),record.value().getPayload());
 
                         snapshot.setSensorsState(new HashMap<>());
                         snapshot.getSensorsState().put(record.value().getId(), stateAvro);
