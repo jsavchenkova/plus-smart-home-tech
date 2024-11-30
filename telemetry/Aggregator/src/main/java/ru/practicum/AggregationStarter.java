@@ -31,7 +31,7 @@ import java.util.*;
 public class AggregationStarter {
 
     // ... объявление полей и конструктора ...
-    private static final List<String> topics = List.of("telemetry.sensors.v1","telemetry.hubs.v1");
+    private static final List<String> topics = List.of("telemetry.sensors.v1");
     private static final Duration consume_attempt_timeout = Duration.ofMillis(1000);
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
@@ -61,6 +61,7 @@ public class AggregationStarter {
 
                 int count = 0;
                 for (ConsumerRecord<Void, SensorEventAvro> record : records) {
+                    System.out.println("Получено сообщение. topic: telemetry.sensors.v1" );
 
                     Optional<SensorsSnapshotAvro> result = Optional.empty();
                     // обрабатываем очередную запись

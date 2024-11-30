@@ -38,10 +38,14 @@ message DeviceRemovedEventProto {
 
 message ScenarioAddedEventProto{
     string id = 1;
+    string name = 2;
+    repeated ScenarioConditionProto conditions = 3;
+    repeated DeviceActionProto actions = 4;
 }
 
 message ScenarioRemovedEventProto{
     string id = 1;
+    string name = 2;
 }
 
 enum ActionTypeProto {
