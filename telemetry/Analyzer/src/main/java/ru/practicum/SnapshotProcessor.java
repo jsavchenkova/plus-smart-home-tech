@@ -41,6 +41,7 @@ public class SnapshotProcessor{
                 for (ConsumerRecord<Void, SensorsSnapshotAvro> record: records){
 
                     System.out.println("Получено сообщение. topic: telemetry.snapshots.v1" );
+                    System.out.println(record.value());
 
                     manageOffsets(record, count, consumer);
                     count++;

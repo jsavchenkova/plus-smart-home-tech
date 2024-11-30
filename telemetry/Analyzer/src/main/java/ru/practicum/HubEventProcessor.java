@@ -38,6 +38,11 @@ public class HubEventProcessor implements Runnable{
                 int count = 0;
                 for (ConsumerRecord<Void, HubEventAvro> record : records) {
                     System.out.println("Получено сообщение. topic: telemetry.hubs.v1" );
+                    System.out.println(record.value());
+
+                    String type = record.value().getPayload().getClass().getSimpleName();
+
+
 
                     manageOffsets(record, count, consumer);
                     count++;

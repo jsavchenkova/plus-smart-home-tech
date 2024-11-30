@@ -44,8 +44,7 @@ message ScenarioAddedEventProto{
 }
 
 message ScenarioRemovedEventProto{
-    string id = 1;
-    string name = 2;
+    string name = 1;
 }
 
 enum ActionTypeProto {

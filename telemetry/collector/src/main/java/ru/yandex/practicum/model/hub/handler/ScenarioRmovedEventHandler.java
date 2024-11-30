@@ -27,11 +27,10 @@ public class ScenarioRmovedEventHandler implements HubEventHandler{
     public void handle(HubEventProto event) {
         System.out.println("Сценарий удалён");
 
-        ScenarioRemovedEventProto eventProto = event.getScenarioRemoved();
-
         ScenarioRemovedEvent scenario = new ScenarioRemovedEvent();
         scenario.setHubId(event.getHubId());
         scenario.setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds()));
+        scenario.setName(event.getScenarioRemoved().getName());
 
         service.processingHub(scenario);
     }

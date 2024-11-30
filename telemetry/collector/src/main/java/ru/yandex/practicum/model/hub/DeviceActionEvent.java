@@ -1,13 +1,13 @@
 package ru.yandex.practicum.model.hub;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.yandex.practicum.contant.ActionType;
 
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class DeviceActionEvent {
     private String sensorId;
     private ActionType type;
