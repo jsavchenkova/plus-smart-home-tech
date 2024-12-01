@@ -8,9 +8,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.model.hub.*;
-import ru.yandex.practicum.model.sensor.*;
 import ru.yandex.practicum.serialize.hub.HubEventSerializer;
 import ru.yandex.practicum.serialize.sensor.SensorAvroSerializer;
 
@@ -82,7 +81,7 @@ public class CollectorService {
         List<ScenarioConditionAvro> conditionAvros = new ArrayList<>();
         for (ScenarioCondition sc : hubEvent.getConditions()) {
             conditionAvros.add(new ScenarioConditionAvro(sc.getSensorId()
-                    , DeviceTypeAvro.valueOf(sc.getType().name())
+                    , ConditionTypeAvro.valueOf(sc.getType().name())
                     , ConditionOperationAvro.valueOf(sc.getConditionOperation().name())
                     , sc.getValue()));
         }

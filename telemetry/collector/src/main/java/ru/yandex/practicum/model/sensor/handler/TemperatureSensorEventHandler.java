@@ -2,10 +2,10 @@ package ru.yandex.practicum.model.sensor.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.TemperatureSensorEvent;
 import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.TemperatureSensorProto;
-import ru.yandex.practicum.model.sensor.TemperatureSensorEvent;
 import ru.yandex.practicum.service.CollectorService;
 
 import java.time.Instant;

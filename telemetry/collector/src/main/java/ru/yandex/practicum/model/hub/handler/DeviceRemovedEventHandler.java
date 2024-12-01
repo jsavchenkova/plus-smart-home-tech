@@ -2,12 +2,9 @@ package ru.yandex.practicum.model.hub.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.contant.DeviceSensorType;
-import ru.yandex.practicum.grpc.telemetry.event.DeviceAddedEventProto;
+import ru.yandex.practicum.DeviceRemovedEvent;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceRemovedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
-import ru.yandex.practicum.model.hub.DeviceAddedEvent;
-import ru.yandex.practicum.model.hub.DeviceRemovedEvent;
 import ru.yandex.practicum.service.CollectorService;
 
 import java.time.Instant;
@@ -32,7 +29,7 @@ public class DeviceRemovedEventHandler implements HubEventHandler{
         DeviceRemovedEvent deviceEvent = new DeviceRemovedEvent();
         deviceEvent.setHubId(event.getHubId());
         deviceEvent.setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds()));
-        deviceEvent.setId(event.getDeviceAdded().getId());
+        deviceEvent.setId(event.getDeviceRemoved().getId());
 
         service.processingHub(deviceEvent);
 

@@ -2,11 +2,10 @@ package ru.yandex.practicum.model.hub.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.ScenarioAddedEvent;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
 import ru.yandex.practicum.mapper.ScenarioAddedEventMapper;
-import ru.yandex.practicum.model.hub.ScenarioAddedEvent;
-import ru.yandex.practicum.model.hub.ScenarioCondition;
 import ru.yandex.practicum.service.CollectorService;
 
 import java.time.Instant;

@@ -2,9 +2,9 @@ package ru.yandex.practicum.model.sensor.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.LightSensorEvent;
 import ru.yandex.practicum.grpc.telemetry.event.LightSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
-import ru.yandex.practicum.model.sensor.LightSensorEvent;
 import ru.yandex.practicum.service.CollectorService;
 
 import java.time.Instant;

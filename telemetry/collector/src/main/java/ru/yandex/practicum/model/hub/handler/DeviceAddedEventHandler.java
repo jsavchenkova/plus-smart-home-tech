@@ -2,11 +2,11 @@ package ru.yandex.practicum.model.hub.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.contant.DeviceSensorType;
+import ru.yandex.practicum.DeviceAddedEvent;
+import ru.yandex.practicum.DeviceSensorType;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
-import ru.yandex.practicum.model.hub.DeviceAddedEvent;
 import ru.yandex.practicum.service.CollectorService;
 
 import java.time.Instant;

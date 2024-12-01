@@ -1,14 +1,8 @@
 package ru.yandex.practicum.mapper;
 
-import ru.yandex.practicum.contant.ActionType;
-import ru.yandex.practicum.contant.ConditionOperation;
-import ru.yandex.practicum.contant.ConditionType;
-import ru.yandex.practicum.grpc.telemetry.event.ConditionTypeProto;
+import ru.yandex.practicum.*;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
-import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
-import ru.yandex.practicum.model.hub.DeviceActionEvent;
-import ru.yandex.practicum.model.hub.ScenarioAddedEvent;
-import ru.yandex.practicum.model.hub.ScenarioCondition;
+
 
 import java.time.Instant;
 import java.util.List;
