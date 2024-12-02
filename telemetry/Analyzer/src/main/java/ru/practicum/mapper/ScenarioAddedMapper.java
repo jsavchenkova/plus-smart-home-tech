@@ -18,12 +18,12 @@ public class ScenarioAddedMapper {
         return scenarioAddedEvent;
     }
 
-    private static ScenarioCondition mapConditionAvroToCondition(ScenarioConditionAvro conditionAvro){
+    private static ScenarioCondition mapConditionAvroToCondition(ScenarioConditionAvro conditionAvro) {
         ScenarioCondition condition = new ScenarioCondition();
         condition.setSensorId(conditionAvro.getSensorId());
         condition.setType(ConditionType.valueOf(conditionAvro.getType().name()));
         condition.setConditionOperation(ConditionOperation.valueOf(conditionAvro.getOperation().name()));
-        condition.setValue((int)conditionAvro.getValue());
+        condition.setValue((int) conditionAvro.getValue());
 
         return condition;
     }

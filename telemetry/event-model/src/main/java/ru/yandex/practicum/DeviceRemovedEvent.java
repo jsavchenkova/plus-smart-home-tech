@@ -11,12 +11,12 @@ import static ru.yandex.practicum.HubEventType.DEVICE_REMOVED;
 @Getter
 @Setter
 @ToString
-public class DeviceRemovedEvent extends  HubEvent{
+public class DeviceRemovedEvent extends HubEvent {
 
     @NonNull
     private String id;
 
-    public HubEventType getType(){
+    public HubEventType getType() {
         return DEVICE_REMOVED;
     }
 }

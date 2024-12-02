@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.DeviceAddedEvent;
 import ru.yandex.practicum.DeviceSensorType;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceAddedEventProto;
-import ru.yandex.practicum.grpc.telemetry.event.DeviceTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.service.CollectorService;
 
@@ -15,7 +14,7 @@ import static ru.yandex.practicum.grpc.telemetry.event.HubEventProto.PayloadCase
 
 @Component
 @RequiredArgsConstructor
-public class DeviceAddedEventHandler implements HubEventHandler{
+public class DeviceAddedEventHandler implements HubEventHandler {
     @Override
     public HubEventProto.PayloadCase getMessageType() {
         return DEVICE_ADDED;

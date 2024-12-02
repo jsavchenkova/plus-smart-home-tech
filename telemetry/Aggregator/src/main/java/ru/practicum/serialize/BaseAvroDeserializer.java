@@ -8,12 +8,10 @@ import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.common.serialization.Deserializer;
 import ru.practicum.exception.DeserializationException;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
 public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deserializer<T> {
-    private DecoderFactory decoderFactory ;
-    private DatumReader<T> reader ;
-
+    private DecoderFactory decoderFactory;
+    private DatumReader<T> reader;
 
 
     public BaseAvroDeserializer(Schema schema) {
@@ -21,8 +19,8 @@ public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deser
     }
 
     public BaseAvroDeserializer(DecoderFactory decoderFactory, Schema schema) {
-      this.decoderFactory = decoderFactory;
-      reader = new SpecificDatumReader<>(schema);
+        this.decoderFactory = decoderFactory;
+        reader = new SpecificDatumReader<>(schema);
     }
 
     // ...

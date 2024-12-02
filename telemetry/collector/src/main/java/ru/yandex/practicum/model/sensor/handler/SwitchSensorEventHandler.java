@@ -3,7 +3,6 @@ package ru.yandex.practicum.model.sensor.handler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.SwitchSensorEvent;
-import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SwitchSensorProto;
 import ru.yandex.practicum.service.CollectorService;
@@ -14,7 +13,7 @@ import static ru.yandex.practicum.grpc.telemetry.event.SensorEventProto.PayloadC
 
 @Component
 @RequiredArgsConstructor
-public class SwitchSensorEventHandler implements SensorEventHandler{
+public class SwitchSensorEventHandler implements SensorEventHandler {
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
         return SWITCH_SENSOR;

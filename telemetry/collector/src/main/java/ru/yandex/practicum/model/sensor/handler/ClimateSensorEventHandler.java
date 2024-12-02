@@ -13,7 +13,7 @@ import static ru.yandex.practicum.grpc.telemetry.event.SensorEventProto.PayloadC
 
 @Component
 @RequiredArgsConstructor
-public class ClimateSensorEventHandler implements SensorEventHandler{
+public class ClimateSensorEventHandler implements SensorEventHandler {
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
         return CLIMATE_SENSOR;

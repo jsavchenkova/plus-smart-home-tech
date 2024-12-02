@@ -4,11 +4,10 @@ import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
-import lombok.RequiredArgsConstructor;
-
 import net.devh.boot.grpc.server.service.GrpcService;
 import ru.yandex.practicum.grpc.telemetry.collector.CollectorControllerGrpc;
-import ru.yandex.practicum.grpc.telemetry.event.*;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.model.hub.handler.HubEventHandler;
 import ru.yandex.practicum.model.sensor.handler.SensorEventHandler;
 
@@ -42,8 +41,8 @@ public class EventController extends CollectorControllerGrpc.CollectorController
      * Метод для обработки событий от датчиков.
      * Вызывается при получении нового события от gRPC-клиента.
      *
-     * @param request           Событие от датчика
-     * @param responseObserver  Ответ для клиента
+     * @param request          Событие от датчика
+     * @param responseObserver Ответ для клиента
      */
     @Override
     public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
@@ -69,7 +68,7 @@ public class EventController extends CollectorControllerGrpc.CollectorController
 
     @Override
     public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
-        try{
+        try {
             // проверяем, есть ли обработчик для полученного события
             if (hubEventHandlers.containsKey(request.getPayloadCase())) {
                 // если обработчик найден, передаём событие ему на обработку
@@ -82,7 +81,7 @@ public class EventController extends CollectorControllerGrpc.CollectorController
             responseObserver.onNext(Empty.getDefaultInstance());
             // и завершаем обработку запроса
             responseObserver.onCompleted();
-        }catch (Exception e){
+        } catch (Exception e) {
             // в случае исключения отправляем ошибку клиенту
             responseObserver.onError(new StatusRuntimeException(Status.fromThrowable(e)));
         }

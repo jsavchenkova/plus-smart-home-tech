@@ -57,7 +57,7 @@ public class HubService {
             conditionEntity.setValue(sc.getValue());
             conditionRepository.save(conditionEntity);
             Optional<SensorEntity> sensorEntity = sensorRepository.findByIdAndHubId(sc.getSensorId(), event.getHubId());
-            if(sensorEntity.isEmpty()){
+            if (sensorEntity.isEmpty()) {
                 System.out.println("Нужный сенсор не найден");
                 throw new ScenarioAddedException("Нужный сенсор не найден");
             }
@@ -73,7 +73,7 @@ public class HubService {
             actionEntity.setValue(da.getValue());
             actionRepository.save(actionEntity);
             Optional<SensorEntity> sensorEntity = sensorRepository.findByIdAndHubId(da.getSensorId(), event.getHubId());
-            if(sensorEntity.isEmpty()){
+            if (sensorEntity.isEmpty()) {
                 System.out.println("Нужный сенсор не найден");
                 throw new ScenarioAddedException("Нужный сенсор не найден");
             }

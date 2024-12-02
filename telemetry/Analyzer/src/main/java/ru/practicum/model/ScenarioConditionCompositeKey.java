@@ -7,10 +7,10 @@ import java.io.Serializable;
 
 @Embeddable
 public class ScenarioConditionCompositeKey implements Serializable {
-    @Column(insertable=false, updatable=false)
-    private Long scenario_id;
-    @Column(insertable=false, updatable=false)
-    private String sensor_id;
-    @Column(insertable=false, updatable=false)
-    private Long condition_id;
+    @Column(name = "scenario_id", insertable = false, updatable = false)
+    private Long scenarioId;
+    @Column(name = "sensor_id", insertable = false, updatable = false)
+    private String sensorId;
+    @Column(name = "condition_id", insertable = false, updatable = false)
+    private Long conditionId;
 }

@@ -19,7 +19,7 @@ import java.util.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class HubEventProcessor implements Runnable{
+public class HubEventProcessor implements Runnable {
     private static final List<String> topics = List.of("telemetry.hubs.v1");
     private static final Duration consume_attempt_timeout = Duration.ofMillis(1000);
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
@@ -27,20 +27,20 @@ public class HubEventProcessor implements Runnable{
     private final HubService service;
 
     @Override
-    public void run(){
+    public void run() {
         Properties config = getPropertiesConsumerHub();
         KafkaConsumer<Void, HubEventAvro> consumer = new KafkaConsumer<>(config);
 
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
-        try{
+        try {
 
             consumer.subscribe(topics);
 
-            while(true){
+            while (true) {
                 ConsumerRecords<Void, HubEventAvro> records = consumer.poll(consume_attempt_timeout);
                 int count = 0;
                 for (ConsumerRecord<Void, HubEventAvro> record : records) {
-                    System.out.println("Получено сообщение. topic: telemetry.hubs.v1" );
+                    System.out.println("Получено сообщение. topic: telemetry.hubs.v1");
                     System.out.println(record.value());
 
                     String type = record.value().getPayload().getClass().getSimpleName();
@@ -75,7 +75,7 @@ public class HubEventProcessor implements Runnable{
                                 service.processingEvent(deviceAdded);
                                 break;
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
 
@@ -86,7 +86,7 @@ public class HubEventProcessor implements Runnable{
                 consumer.commitAsync();
             }
 
-        }catch (
+        } catch (
                 WakeupException ignored) {
             // игнорируем - закрываем консьюмер и продюсер в блоке finally
         } catch (
@@ -95,13 +95,7 @@ public class HubEventProcessor implements Runnable{
         } finally {
 
             try {
-                // Перед тем, как закрыть продюсер и консьюмер, нужно убедится,
-                // что все сообщения, лежащие в буффере, отправлены и
-                // все оффсеты обработанных сообщений зафиксированы
-
-                // здесь нужно вызвать метод продюсера для сброса данных в буффере
-                // здесь нужно вызвать метод консьюмера для фиксиции смещений
-
+                consumer.commitSync(currentOffsets);
             } finally {
                 log.info("Закрываем консьюмер");
                 consumer.close();

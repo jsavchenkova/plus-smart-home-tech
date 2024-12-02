@@ -16,14 +16,14 @@ public class ScenarioConditionEntity {
     private ScenarioConditionCompositeKey key;
 
     @ManyToOne
-    @JoinColumn(name="scenario_id")
+    @JoinColumn(name = "scenario_id")
     private ScenarioEntity scenarioEntity;
 
     @ManyToOne
-    @JoinColumn(name="sensor_id")
+    @JoinColumn(name = "sensor_id")
     private SensorEntity sensorEntity;
 
     @ManyToOne
-    @JoinColumn(name="condition_id")
+    @JoinColumn(name = "condition_id")
     private ConditionEntity conditionEntity;
 }

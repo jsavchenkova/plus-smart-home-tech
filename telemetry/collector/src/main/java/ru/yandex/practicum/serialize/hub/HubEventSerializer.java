@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.yandex.practicum.exception.SerializationException;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.serialize.sensor.SensorAvroSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

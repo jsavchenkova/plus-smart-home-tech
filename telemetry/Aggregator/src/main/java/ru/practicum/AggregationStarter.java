@@ -61,28 +61,28 @@ public class AggregationStarter {
 
                 int count = 0;
                 for (ConsumerRecord<Void, SensorEventAvro> record : records) {
-                    System.out.println("Получено сообщение. topic: telemetry.sensors.v1" );
+                    System.out.println("Получено сообщение. topic: telemetry.sensors.v1");
 
                     Optional<SensorsSnapshotAvro> result = Optional.empty();
                     // обрабатываем очередную запись
-                    if(snapshots.containsKey(record.value().getHubId())){
+                    if (snapshots.containsKey(record.value().getHubId())) {
                         SensorsSnapshotAvro snapshot = snapshots.get(record.value().getHubId());
-                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()),record.value().getPayload());
-                        if(snapshot.getSensorsState().containsKey(record.value().getId())){
-                            if(!snapshot.getSensorsState().get(record.value().getId()).equals(stateAvro)){
+                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()), record.value().getPayload());
+                        if (snapshot.getSensorsState().containsKey(record.value().getId())) {
+                            if (!snapshot.getSensorsState().get(record.value().getId()).equals(stateAvro)) {
                                 snapshot.getSensorsState().put(record.value().getId(), stateAvro);
                                 result = Optional.of(snapshot);
                             }
-                        } else{
+                        } else {
                             snapshot.getSensorsState().put(record.value().getId(), stateAvro);
                             result = Optional.of(snapshot);
                         }
 
-                    }else{
-                        SensorsSnapshotAvro snapshot =  new SensorsSnapshotAvro();
+                    } else {
+                        SensorsSnapshotAvro snapshot = new SensorsSnapshotAvro();
                         snapshot.setHubId(record.value().getHubId());
                         snapshot.setTimestamp(Instant.ofEpochSecond(record.timestamp()));
-                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()),record.value().getPayload());
+                        SensorStateAvro stateAvro = new SensorStateAvro(Instant.ofEpochSecond(record.timestamp()), record.value().getPayload());
 
                         snapshot.setSensorsState(new HashMap<>());
                         snapshot.getSensorsState().put(record.value().getId(), stateAvro);
@@ -90,7 +90,7 @@ public class AggregationStarter {
                         result = Optional.of(snapshot);
                     }
 
-                    if(result.isPresent()){
+                    if (result.isPresent()) {
                         Properties properties = getPropertiesProducerSensor();
                         Producer<String, SensorsSnapshotAvro> producer = new KafkaProducer<>(properties);
                         String snapshotTopic = "telemetry.snapshots.v1";
@@ -117,12 +117,7 @@ public class AggregationStarter {
         } finally {
 
             try {
-                // Перед тем, как закрыть продюсер и консьюмер, нужно убедится,
-                // что все сообщения, лежащие в буффере, отправлены и
-                // все оффсеты обработанных сообщений зафиксированы
-
-                // здесь нужно вызвать метод продюсера для сброса данных в буффере
-                // здесь нужно вызвать метод консьюмера для фиксиции смещений
+                consumer.commitSync(currentOffsets);
 
             } finally {
                 log.info("Закрываем консьюмер");
@@ -141,7 +136,7 @@ public class AggregationStarter {
         return config;
     }
 
-    private Properties getPropertiesProducerSensor(){
+    private Properties getPropertiesProducerSensor() {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);

@@ -13,7 +13,7 @@ import static ru.yandex.practicum.grpc.telemetry.event.HubEventProto.PayloadCase
 
 @Component
 @RequiredArgsConstructor
-public class DeviceRemovedEventHandler implements HubEventHandler{
+public class DeviceRemovedEventHandler implements HubEventHandler {
     @Override
     public HubEventProto.PayloadCase getMessageType() {
         return DEVICE_REMOVED;

@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface ScenarioRepository extends JpaRepository<ScenarioEntity, Long> {
     List<ScenarioEntity> findByHubId(String hubId);
+
     Optional<ScenarioEntity> findByHubIdAndName(String hubId, String name);
 }

@@ -3,7 +3,6 @@ package ru.yandex.practicum.model.sensor.handler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.TemperatureSensorEvent;
-import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.TemperatureSensorProto;
 import ru.yandex.practicum.service.CollectorService;
@@ -14,7 +13,7 @@ import static ru.yandex.practicum.grpc.telemetry.event.SensorEventProto.PayloadC
 
 @Component
 @RequiredArgsConstructor
-public class TemperatureSensorEventHandler implements SensorEventHandler{
+public class TemperatureSensorEventHandler implements SensorEventHandler {
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
         return TEMPERATURE_SENSOR;

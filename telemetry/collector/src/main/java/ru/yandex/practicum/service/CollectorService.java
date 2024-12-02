@@ -23,39 +23,38 @@ import java.util.Properties;
 public class CollectorService {
 
     public void processingSensors(ClimateSensorEvent sensorEvent) {
-        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp()
-                , new ClimateSensorAvro(sensorEvent.getTemperatureC(), sensorEvent.getHumidity(), sensorEvent.getCo2Level()));
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new ClimateSensorAvro(sensorEvent.getTemperatureC(), sensorEvent.getHumidity(), sensorEvent.getCo2Level()));
 
         sendSensorEvent(eventAvro);
 
     }
 
     public void processingSensors(LightSensorEvent sensorEvent) {
-        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp()
-                , new LightSensorAvro(sensorEvent.getLinkQuality(), sensorEvent.getLuminosity()));
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new LightSensorAvro(sensorEvent.getLinkQuality(), sensorEvent.getLuminosity()));
         sendSensorEvent(eventAvro);
     }
 
     public void processingSensors(MotionSensorEvent sensorEvent) {
-        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp()
-                , new MotionSensorAvro
-                (sensorEvent.getLinkQuality(), sensorEvent.isMotion(), sensorEvent.getVoltage()));
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new MotionSensorAvro(sensorEvent.getLinkQuality(), sensorEvent.isMotion(), sensorEvent.getVoltage()));
 
         sendSensorEvent(eventAvro);
 
     }
 
     public void processingSensors(SwitchSensorEvent sensorEvent) {
-        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp()
-                , new SwitchSensorAvro(sensorEvent.isState()));
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new SwitchSensorAvro(sensorEvent.isState()));
 
         sendSensorEvent(eventAvro);
 
     }
 
     public void processingSensors(TemperatureSensorEvent sensorEvent) {
-        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp()
-                , new TemperatureSensorAvro (sensorEvent.getTemperatureC(), sensorEvent.getTemperatureF()));
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new TemperatureSensorAvro(sensorEvent.getTemperatureC(), sensorEvent.getTemperatureF()));
 
         sendSensorEvent(eventAvro);
     }
@@ -80,10 +79,10 @@ public class CollectorService {
     public void processingHub(ScenarioAddedEvent hubEvent) {
         List<ScenarioConditionAvro> conditionAvros = new ArrayList<>();
         for (ScenarioCondition sc : hubEvent.getConditions()) {
-            conditionAvros.add(new ScenarioConditionAvro(sc.getSensorId()
-                    , ConditionTypeAvro.valueOf(sc.getType().name())
-                    , ConditionOperationAvro.valueOf(sc.getConditionOperation().name())
-                    , sc.getValue()));
+            conditionAvros.add(new ScenarioConditionAvro(sc.getSensorId(),
+                    ConditionTypeAvro.valueOf(sc.getType().name()),
+                    ConditionOperationAvro.valueOf(sc.getConditionOperation().name()),
+                    sc.getValue()));
         }
         List<DeviceActionAvro> deviceActionAvros = new ArrayList<>();
         for (DeviceActionEvent da : hubEvent.getActions()) {
@@ -100,7 +99,7 @@ public class CollectorService {
 
     public void processingHub(ScenarioRemovedEvent hubEvent) {
         HubEventAvro eventAvro = new HubEventAvro(hubEvent.getHubId(), hubEvent.getTimestamp(),
-        new ScenarioRemovedEventAvro(hubEvent.getName()));
+                new ScenarioRemovedEventAvro(hubEvent.getName()));
 
         sendHubEvent(eventAvro);
 
@@ -134,7 +133,7 @@ public class CollectorService {
         producer.close();
     }
 
-    private void sendHubEvent (HubEventAvro eventArvo){
+    private void sendHubEvent(HubEventAvro eventArvo) {
         Properties config = getPropertiesHub();
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, HubEventSerializer.class);
 

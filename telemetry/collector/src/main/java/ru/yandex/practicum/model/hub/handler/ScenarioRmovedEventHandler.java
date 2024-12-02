@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.ScenarioRemovedEvent;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
-import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
-import ru.yandex.practicum.grpc.telemetry.event.ScenarioRemovedEventProto;
 import ru.yandex.practicum.service.CollectorService;
 
 import java.time.Instant;
@@ -14,7 +12,7 @@ import static ru.yandex.practicum.grpc.telemetry.event.HubEventProto.PayloadCase
 
 @Component
 @RequiredArgsConstructor
-public class ScenarioRmovedEventHandler implements HubEventHandler{
+public class ScenarioRmovedEventHandler implements HubEventHandler {
     @Override
     public HubEventProto.PayloadCase getMessageType() {
         return SCENARIO_REMOVED;

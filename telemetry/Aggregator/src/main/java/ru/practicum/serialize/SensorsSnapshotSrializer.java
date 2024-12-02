@@ -8,7 +8,6 @@ import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.io.ByteArrayOutputStream;
