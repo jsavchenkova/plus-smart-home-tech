@@ -1,13 +1,14 @@
 package ru.yandex.practicum;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
 import static ru.yandex.practicum.SensorEventType.MOTION_SENSOR_EVENT;
 
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class MotionSensorEvent extends SensorEvent {
 
     private int linkQuality;

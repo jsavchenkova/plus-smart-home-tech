@@ -1,8 +1,6 @@
 package ru.yandex.practicum;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import static ru.yandex.practicum.SensorEventType.TEMPERATURE_SENSOR_EVENT;
 
@@ -10,6 +8,8 @@ import static ru.yandex.practicum.SensorEventType.TEMPERATURE_SENSOR_EVENT;
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class TemperatureSensorEvent extends SensorEvent {
 
     private int temperatureC;

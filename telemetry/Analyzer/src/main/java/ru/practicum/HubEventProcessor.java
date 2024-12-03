@@ -6,20 +6,35 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.VoidDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.mapper.ScenarioAddedMapper;
 import ru.practicum.serialize.HubEventDeserializer;
 import ru.practicum.service.HubService;
 import ru.yandex.practicum.*;
-import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class HubEventProcessor implements Runnable {
+
+    @Value("${kafka.bootstrap-server}")
+    private String bootstrapServer;
+    @Value("${kafka.client-id}")
+    private String clientId;
+    @Value("${kafka.group-id}")
+    private String groupId;
+
     private static final List<String> topics = List.of("telemetry.hubs.v1");
     private static final Duration consume_attempt_timeout = Duration.ofMillis(1000);
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
@@ -106,11 +121,11 @@ public class HubEventProcessor implements Runnable {
 
     private Properties getPropertiesConsumerHub() {
         Properties config = new Properties();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, HubEventDeserializer.class);
-        config.put(ConsumerConfig.CLIENT_ID_CONFIG, "SomeConsumer2");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "some.group.id2");
+        config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         return config;
     }
 

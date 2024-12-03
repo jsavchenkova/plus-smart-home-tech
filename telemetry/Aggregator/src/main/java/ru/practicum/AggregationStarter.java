@@ -11,6 +11,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.VoidDeserializer;
 import org.apache.kafka.common.serialization.VoidSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.serialize.SensorEventDeserializer;
 import ru.practicum.serialize.SensorsSnapshotSrializer;
@@ -29,6 +30,12 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class AggregationStarter {
+    @Value("${kafka.bootstrap-server}")
+    private  String bootstrapServer;
+    @Value("${kafka.client-id}")
+    private  String clientId;
+    @Value("${kafka.group-id}")
+    private  String groupId;
 
     // ... объявление полей и конструктора ...
     private static final List<String> topics = List.of("telemetry.sensors.v1");
@@ -128,17 +135,17 @@ public class AggregationStarter {
 
     private Properties getPropertiesConsumerSensor() {
         Properties config = new Properties();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
-        config.put(ConsumerConfig.CLIENT_ID_CONFIG, "SomeConsumer");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "some.group.id");
+        config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         return config;
     }
 
     private Properties getPropertiesProducerSensor() {
         Properties config = new Properties();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorsSnapshotSrializer.class);
         return config;

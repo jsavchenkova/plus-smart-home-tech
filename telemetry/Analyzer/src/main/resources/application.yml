@@ -22,3 +22,8 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+
+kafka:
+  bootstrap-server: localhost:9092
+  client-id: SomeConsumer
+  group-id: some.group.id

@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.VoidDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.model.SensorEventSnapshot;
 import ru.practicum.model.SensorState;
@@ -21,6 +22,14 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class SnapshotProcessor {
+
+    @Value("${kafka.bootstrap-server}")
+    private String bootstrapServer;
+    @Value("${kafka.client-id}")
+    private String clientId;
+    @Value("${kafka.group-id}")
+    private String groupId;
+
     private static final List<String> topics = List.of("telemetry.snapshots.v1");
     private static final Duration consume_attempt_timeout = Duration.ofMillis(1000);
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
@@ -54,60 +63,43 @@ public class SnapshotProcessor {
                         SensorStateAvro stateAvro = record.value().getSensorsState().get(str);
                         SensorState state = new SensorState();
                         state.setTimestamp(stateAvro.getTimestamp());
-
+                        SensorEvent sensorEvent = null;
                         switch (stateAvro.getData().getClass().getSimpleName()) {
                             case "MotionSensorAvro":
-                                MotionSensorEvent motionSensorEvent = new MotionSensorEvent();
-                                motionSensorEvent.setHubId(record.value().getHubId());
-                                motionSensorEvent.setId(str);
-                                motionSensorEvent.setTimestamp(stateAvro.getTimestamp());
-                                motionSensorEvent.setMotion(((MotionSensorAvro) stateAvro.getData()).getMotion());
-                                motionSensorEvent.setLinkQuality(((MotionSensorAvro) stateAvro.getData()).getLinkQuality());
-                                motionSensorEvent.setVoltage(((MotionSensorAvro) stateAvro.getData()).getVoltage());
-
-                                state.setData(motionSensorEvent);
+                                sensorEvent = new MotionSensorEvent(
+                                        ((MotionSensorAvro) stateAvro.getData()).getLinkQuality(),
+                                        ((MotionSensorAvro) stateAvro.getData()).getMotion(),
+                                        ((MotionSensorAvro) stateAvro.getData()).getVoltage()
+                                );
                                 break;
                             case "TemperatureSensorAvro":
-                                TemperatureSensorEvent temperatureSensorEvent = new TemperatureSensorEvent();
-                                temperatureSensorEvent.setHubId(record.value().getHubId());
-                                temperatureSensorEvent.setId(str);
-                                temperatureSensorEvent.setTimestamp(stateAvro.getTimestamp());
-                                temperatureSensorEvent.setTemperatureC(((TemperatureSensorAvro) stateAvro.getData()).getTemperatureC());
-                                temperatureSensorEvent.setTemperatureF(((TemperatureSensorAvro) stateAvro.getData()).getTemperatureF());
-
-                                state.setData(temperatureSensorEvent);
+                                sensorEvent = new TemperatureSensorEvent(
+                                        ((TemperatureSensorAvro) stateAvro.getData()).getTemperatureC(),
+                                        ((TemperatureSensorAvro) stateAvro.getData()).getTemperatureF()
+                                );
                                 break;
                             case "LightSensorAvro":
-                                LightSensorEvent lightSensorEvent = new LightSensorEvent();
-                                lightSensorEvent.setHubId(record.value().getHubId());
-                                lightSensorEvent.setId(str);
-                                lightSensorEvent.setTimestamp(stateAvro.getTimestamp());
-                                lightSensorEvent.setLinkQuality(((LightSensorAvro) stateAvro.getData()).getLinkQuality());
-                                lightSensorEvent.setLuminosity(((LightSensorAvro) stateAvro.getData()).getLuminosity());
-
-                                state.setData(lightSensorEvent);
+                                sensorEvent = new LightSensorEvent(
+                                        ((LightSensorAvro) stateAvro.getData()).getLinkQuality(),
+                                        ((LightSensorAvro) stateAvro.getData()).getLuminosity()
+                                );
                                 break;
                             case "ClimateSensorAvro":
-                                ClimateSensorEvent climateSensorEvent = new ClimateSensorEvent();
-                                climateSensorEvent.setHubId(record.value().getHubId());
-                                climateSensorEvent.setId(str);
-                                climateSensorEvent.setTimestamp(stateAvro.getTimestamp());
-                                climateSensorEvent.setTemperatureC(((ClimateSensorAvro) stateAvro.getData()).getTemperatureC());
-                                climateSensorEvent.setHumidity(((ClimateSensorAvro) stateAvro.getData()).getHumidity());
-                                climateSensorEvent.setCo2Level(((ClimateSensorAvro) stateAvro.getData()).getCo2Level());
-
-                                state.setData(climateSensorEvent);
+                                sensorEvent = new ClimateSensorEvent(
+                                        ((ClimateSensorAvro) stateAvro.getData()).getTemperatureC(),
+                                        ((ClimateSensorAvro) stateAvro.getData()).getHumidity(),
+                                        ((ClimateSensorAvro) stateAvro.getData()).getCo2Level()
+                                );
                                 break;
                             case "SwitchSensorAvro":
-                                SwitchSensorEvent switchSensorEvent = new SwitchSensorEvent();
-                                switchSensorEvent.setHubId(record.value().getHubId());
-                                switchSensorEvent.setId(str);
-                                switchSensorEvent.setTimestamp(stateAvro.getTimestamp());
-                                switchSensorEvent.setState(((SwitchSensorAvro)stateAvro.getData()).getState());
-
-                                state.setData(switchSensorEvent);
+                                sensorEvent = new SwitchSensorEvent(((SwitchSensorAvro) stateAvro.getData()).getState());
                                 break;
                         }
+                        if (sensorEvent == null) continue;
+                        sensorEvent.setHubId(record.value().getHubId());
+                        sensorEvent.setId(str);
+                        sensorEvent.setTimestamp(stateAvro.getTimestamp());
+                        state.setData(sensorEvent);
 
                         stateMap.put(str, state);
                     }
@@ -143,11 +135,11 @@ public class SnapshotProcessor {
 
     private Properties getPropertiesConsumerSnapshot() {
         Properties config = new Properties();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorsSnapshotDeserializer.class);
-        config.put(ConsumerConfig.CLIENT_ID_CONFIG, "SomeConsumer1");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "some.group.id1");
+        config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         return config;
     }
 
