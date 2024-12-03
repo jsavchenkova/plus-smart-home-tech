@@ -8,7 +8,7 @@ import static ru.yandex.practicum.SensorEventType.CLIMATE_SENSOR_EVENT;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class ClimateSensorEvent extends SensorEvent {
 

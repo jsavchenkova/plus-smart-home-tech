@@ -7,7 +7,7 @@ import static ru.yandex.practicum.SensorEventType.MOTION_SENSOR_EVENT;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class MotionSensorEvent extends SensorEvent {
 

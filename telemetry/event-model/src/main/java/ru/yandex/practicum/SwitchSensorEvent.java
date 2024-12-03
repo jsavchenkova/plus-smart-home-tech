@@ -8,7 +8,7 @@ import static ru.yandex.practicum.SensorEventType.SWITCH_SENSOR_EVENT;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class SwitchSensorEvent extends SensorEvent {
 
