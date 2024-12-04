@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.model.hub.*;
-import ru.yandex.practicum.model.sensor.*;
+import ru.yandex.practicum.*;
+
 import ru.yandex.practicum.service.CollectorService;
 
 @RestController

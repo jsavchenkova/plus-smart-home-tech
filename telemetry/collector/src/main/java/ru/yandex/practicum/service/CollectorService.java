@@ -8,12 +8,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.model.hub.*;
-import ru.yandex.practicum.model.sensor.*;
-import ru.yandex.practicum.serialize.hub.DeviceAddedAvroSerializer;
-import ru.yandex.practicum.serialize.hub.DeviceRemovedAvroSerializer;
-import ru.yandex.practicum.serialize.sensor.*;
+import ru.yandex.practicum.serialize.hub.HubEventSerializer;
+import ru.yandex.practicum.serialize.sensor.SensorAvroSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,163 +23,85 @@ import java.util.Properties;
 public class CollectorService {
 
     public void processingSensors(ClimateSensorEvent sensorEvent) {
-        ClimateSensorAvro event = new ClimateSensorAvro(
-                sensorEvent.getTemperatureC(), sensorEvent.getHumidity(), sensorEvent.getCo2Level());
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new ClimateSensorAvro(sensorEvent.getTemperatureC(), sensorEvent.getHumidity(), sensorEvent.getCo2Level()));
 
+        sendSensorEvent(eventAvro);
 
-        Properties config = getPropertiesSensor();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ClimateSensorAvroSerializer.class);
-
-        Producer<String, ClimateSensorAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.sensors.v1";
-
-        ProducerRecord<String, ClimateSensorAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
     }
 
     public void processingSensors(LightSensorEvent sensorEvent) {
-        LightSensorAvro event = new LightSensorAvro(sensorEvent.getLinkQuality(), sensorEvent.getLuminosity());
-
-        Properties config = getPropertiesSensor();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, LightSensorAvroSerializer.class);
-
-        Producer<String, LightSensorAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.sensors.v1";
-
-        ProducerRecord<String, LightSensorAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new LightSensorAvro(sensorEvent.getLinkQuality(), sensorEvent.getLuminosity()));
+        sendSensorEvent(eventAvro);
     }
 
     public void processingSensors(MotionSensorEvent sensorEvent) {
-        MotionSensorAvro event = new MotionSensorAvro
-                (sensorEvent.getLinkQuality(), sensorEvent.isMotion(), sensorEvent.getVoltage());
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new MotionSensorAvro(sensorEvent.getLinkQuality(), sensorEvent.isMotion(), sensorEvent.getVoltage()));
 
-        Properties config = getPropertiesSensor();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, MotionSensorAvroSerializer.class);
-
-        Producer<String, MotionSensorAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.sensors.v1";
-
-        ProducerRecord<String, MotionSensorAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
+        sendSensorEvent(eventAvro);
 
     }
 
     public void processingSensors(SwitchSensorEvent sensorEvent) {
-        SwitchSensorAvro event = new SwitchSensorAvro
-                (sensorEvent.isState());
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new SwitchSensorAvro(sensorEvent.isState()));
 
-        Properties config = getPropertiesSensor();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SwitchSensorAvroSerializer.class);
-
-        Producer<String, SwitchSensorAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.sensors.v1";
-
-        ProducerRecord<String, SwitchSensorAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
+        sendSensorEvent(eventAvro);
 
     }
 
     public void processingSensors(TemperatureSensorEvent sensorEvent) {
-        TemperatureSensorAvro event = new TemperatureSensorAvro
-                (sensorEvent.getTemperatureC(), sensorEvent.getTemperatureF());
+        SensorEventAvro eventAvro = new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
+                new TemperatureSensorAvro(sensorEvent.getTemperatureC(), sensorEvent.getTemperatureF()));
 
-        Properties config = getPropertiesSensor();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, TemperatureSensorAvroSerializer.class);
-
-        Producer<String, TemperatureSensorAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.sensors.v1";
-
-        ProducerRecord<String, TemperatureSensorAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
-
+        sendSensorEvent(eventAvro);
     }
 
     public void processingHub(DeviceAddedEvent hubEvent) {
         DeviceTypeAvro deviceTypeAvro = DeviceTypeAvro.valueOf(hubEvent.getDeviceType().name());
-        DeviceAddedEventAvro event = new DeviceAddedEventAvro(hubEvent.getId(), deviceTypeAvro);
+        HubEventAvro eventAvro = new HubEventAvro(hubEvent.getHubId(), hubEvent.getTimestamp(),
+                new DeviceAddedEventAvro(hubEvent.getId(), deviceTypeAvro));
 
-        Properties config = getPropertiesHub();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DeviceAddedAvroSerializer.class);
-
-        Producer<String, DeviceAddedEventAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.hubs.v1";
-
-        ProducerRecord<String, DeviceAddedEventAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
+        sendHubEvent(eventAvro);
 
     }
 
     public void processingHub(DeviceRemovedEvent hubEvent) {
-        DeviceRemovedEventAvro event = new DeviceRemovedEventAvro(hubEvent.getId());
+        HubEventAvro eventAvro = new HubEventAvro(hubEvent.getHubId(), hubEvent.getTimestamp(),
+                new DeviceRemovedEventAvro(hubEvent.getId()));
 
-        Properties config = getPropertiesHub();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DeviceRemovedAvroSerializer.class);
-
-        Producer<String, DeviceRemovedEventAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.hubs.v1";
-
-        ProducerRecord<String, DeviceRemovedEventAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
+        sendHubEvent(eventAvro);
 
     }
 
     public void processingHub(ScenarioAddedEvent hubEvent) {
         List<ScenarioConditionAvro> conditionAvros = new ArrayList<>();
         for (ScenarioCondition sc : hubEvent.getConditions()) {
-            conditionAvros.add(new ScenarioConditionAvro(sc.getSensorId()
-                    , DeviceTypeAvro.valueOf(sc.getType().name())
-                    , ConditionOperationAvro.valueOf(sc.getOperation().name())
-                    , sc.getValue()));
+            conditionAvros.add(new ScenarioConditionAvro(sc.getSensorId(),
+                    ConditionTypeAvro.valueOf(sc.getType().name()),
+                    ConditionOperationAvro.valueOf(sc.getConditionOperation().name()),
+                    sc.getValue()));
         }
         List<DeviceActionAvro> deviceActionAvros = new ArrayList<>();
-        for (DeviceAction da : hubEvent.getActions()) {
+        for (DeviceActionEvent da : hubEvent.getActions()) {
             deviceActionAvros.add(new DeviceActionAvro(da.getSensorId(), ActionTypeAvro.valueOf(da.getType().name()),
                     da.getValue()));
         }
 
         ScenarioAddedEventAvro event = new ScenarioAddedEventAvro(hubEvent.getName(), conditionAvros, deviceActionAvros);
+        HubEventAvro eventAvro = new HubEventAvro(hubEvent.getHubId(), hubEvent.getTimestamp(), event);
 
-        Properties config = getPropertiesHub();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DeviceRemovedAvroSerializer.class);
-
-        Producer<String, ScenarioAddedEventAvro> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.hubs.v1";
-
-        ProducerRecord<String, ScenarioAddedEventAvro> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
+        sendHubEvent(eventAvro);
 
     }
 
     public void processingHub(ScenarioRemovedEvent hubEvent) {
-        ScenarioRemovedEvent event = new ScenarioRemovedEvent();
+        HubEventAvro eventAvro = new HubEventAvro(hubEvent.getHubId(), hubEvent.getTimestamp(),
+                new ScenarioRemovedEventAvro(hubEvent.getName()));
 
-        Properties config = getPropertiesHub();
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DeviceRemovedAvroSerializer.class);
-
-        Producer<String, ScenarioRemovedEvent> producer = new KafkaProducer<>(config);
-        String topic = "telemetry.hubs.v1";
-
-        ProducerRecord<String, ScenarioRemovedEvent> record = new ProducerRecord<>(topic, event);
-
-        producer.send(record);
-        producer.close();
+        sendHubEvent(eventAvro);
 
     }
 
@@ -189,7 +109,6 @@ public class CollectorService {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, TemperatureSensorAvroSerializer.class);
         return config;
     }
 
@@ -197,8 +116,34 @@ public class CollectorService {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, TemperatureSensorAvroSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorAvroSerializer.class);
         return config;
+    }
+
+    private void sendSensorEvent(SensorEventAvro eventAvro) {
+        Properties config = getPropertiesSensor();
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorAvroSerializer.class);
+
+        Producer<String, SensorEventAvro> producer = new KafkaProducer<>(config);
+        String topic = "telemetry.sensors.v1";
+
+        ProducerRecord<String, SensorEventAvro> record = new ProducerRecord<>(topic, eventAvro);
+
+        producer.send(record);
+        producer.close();
+    }
+
+    private void sendHubEvent(HubEventAvro eventArvo) {
+        Properties config = getPropertiesHub();
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, HubEventSerializer.class);
+
+        Producer<String, HubEventAvro> producer = new KafkaProducer<>(config);
+        String topic = "telemetry.hubs.v1";
+
+        ProducerRecord<String, HubEventAvro> record = new ProducerRecord<>(topic, eventArvo);
+
+        producer.send(record);
+        producer.close();
     }
 
 }
