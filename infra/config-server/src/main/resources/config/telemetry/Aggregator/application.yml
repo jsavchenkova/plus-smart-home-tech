@@ -1,0 +1,4 @@
+kafka:
+  bootstrap-server: localhost:9092
+  client-id: SomeConsumer
+  group-id: some.group.id

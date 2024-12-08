@@ -1,4 +1,11 @@
-kafka:
-  bootstrap-server: localhost:9092
-  client-id: SomeConsumer
-  group-id: some.group.id
+spring:
+  application:
+    name: Aggregator
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
