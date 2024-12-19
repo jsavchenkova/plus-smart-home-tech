@@ -15,7 +15,6 @@ public class ProductDto {
     private String imageSrc;
     private QuantityState quantityState;
     private ProductState productState;
-    private Double rating;
     private ProductCategory productCategory;
     @Min(value = 1)
     private double price;

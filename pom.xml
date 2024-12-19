@@ -22,6 +22,7 @@
         <module>infra/config-server</module>
         <module>commerce/shopping-store</module>
         <module>commerce/interaction-api</module>
+        <module>commerce/shopping-cart</module>
     </modules>
 
     <properties>
