@@ -26,6 +26,7 @@ public class ShoppingCartService {
 
     private final ShoppingCartRepository repository;
     private final BookedProductRepository bookedProductRepository;
+
     public ShoppingCartDto addProducts(Map<UUID, Integer> dto, String userName) {
         Optional<ShoppingCart> cart = repository.findByUserNameAndStatus(userName, ShoppingCartStatus.ACTIVE);
         ShoppingCart curCart;
