@@ -1,8 +1,9 @@
 package ru.yandex.practicum.service;
 
-import jdk.jfr.StackTrace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.BookedProductsDto;
 import ru.yandex.practicum.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.dto.ShoppingCartDto;
@@ -26,6 +27,7 @@ public class ShoppingCartService {
 
     private final ShoppingCartRepository repository;
     private final BookedProductRepository bookedProductRepository;
+    private final WarehouseClient client;
 
     public ShoppingCartDto addProducts(Map<UUID, Integer> dto, String userName) {
         Optional<ShoppingCart> cart = repository.findByUserNameAndStatus(userName, ShoppingCartStatus.ACTIVE);
@@ -39,10 +41,15 @@ public class ShoppingCartService {
             curCart = cart.get();
         }
 
-        curCart.products = dto;
-        curCart = repository.save(curCart);
 
-        return ShoppingCartMapper.INSTANCE.shoppingCartToDto(curCart);
+        curCart.products = dto;
+        ShoppingCartDto cartDto = ShoppingCartMapper.INSTANCE.shoppingCartToDto(curCart);
+
+            client.checkQuantity(cartDto);
+            curCart = repository.save(curCart);
+
+
+        return cartDto;
     }
 
     public ShoppingCartDto getShoppingCart(String userName) {

@@ -1,7 +1,10 @@
 package ru.yandex.practicum.exception;
 
-public class ProductInShoppingCartLowQuantityInWarehouse extends RuntimeException {
-    public ProductInShoppingCartLowQuantityInWarehouse(String message, Throwable cause) {
-        super(message, cause);
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.server.ResponseStatusException;
+
+public class ProductInShoppingCartLowQuantityInWarehouse extends ResponseStatusException {
+    public ProductInShoppingCartLowQuantityInWarehouse(HttpStatusCode statusCode, String message) {
+        super(statusCode, message);
     }
 }

@@ -1,7 +1,9 @@
 package ru.yandex.practicum.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 public class AddressDto {
     private String country;
