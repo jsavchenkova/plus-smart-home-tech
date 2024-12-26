@@ -138,7 +138,7 @@ public class SnapshotProcessor {
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorsSnapshotDeserializer.class);
-        config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
+        config.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId + "-snapshot");
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         return config;
     }
