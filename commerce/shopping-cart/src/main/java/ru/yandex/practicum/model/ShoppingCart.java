@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "shopping-cart", name = "cart")
+@Table(schema = "shopping_cart", name = "cart")
 @Data
 public class ShoppingCart {
     @Id

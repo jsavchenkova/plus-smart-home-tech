@@ -13,7 +13,7 @@ import ru.yandex.practicum.dto.QuantityState;
 import java.util.UUID;
 
 @Entity
-@Table (schema = "shopping-store", name="product")
+@Table (schema = "shopping_store", name="product")
 @Getter
 @Setter
 @NoArgsConstructor

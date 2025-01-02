@@ -8,7 +8,7 @@ import ru.yandex.practicum.dto.ShoppingCartDto;
 import java.util.Map;
 import java.util.UUID;
 
-@FeignClient(name = "shopping-cart")
+@FeignClient(name = "shopping-cart-client", fallback = ShoppingCartFallback.class)
 public interface ShoppingCartClient {
     @PutMapping
     public ShoppingCartDto addProducts(@RequestParam String userName, @RequestBody Map<UUID, Integer> dto);

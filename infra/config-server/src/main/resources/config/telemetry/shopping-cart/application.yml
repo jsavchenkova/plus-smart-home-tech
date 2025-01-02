@@ -6,7 +6,7 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
-        default_schema: shopping-cart
+        default_schema: shopping_cart
   sql:
     init:
       mode: always
