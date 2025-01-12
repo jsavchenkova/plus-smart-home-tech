@@ -1,7 +1,10 @@
 package ru.yandex.practicum.exception;
 
-public class NotAuthorizedUserException extends RuntimeException {
-    public NotAuthorizedUserException(String message, Throwable cause) {
-        super(message, cause);
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.server.ResponseStatusException;
+
+public class NotAuthorizedUserException extends ResponseStatusException {
+    public NotAuthorizedUserException(HttpStatusCode statusCode, String message) {
+        super(statusCode, message);
     }
 }

@@ -6,6 +6,9 @@ import ru.yandex.practicum.Service.WarehouseService;
 import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.*;
 
+import java.util.Map;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/warehouse")
 @RequiredArgsConstructor
@@ -31,5 +34,20 @@ public class WarehouseController implements WarehouseClient {
     @GetMapping("/address")
     public AddressDto getaddres() {
         return service.getaddres();
+    }
+
+    @Override
+    public void shipped(ShippedToDeliveryRequest request) {
+        service.shipped(request);
+    }
+
+    @Override
+    public void returnProducts(Map<UUID, Integer> products) {
+        service.returnProducts(products);
+    }
+
+    @Override
+    public BookedProductsDto assembly(AssemblyProductsForOrderRequest request) {
+        return service.assembly(request);
     }
 }
