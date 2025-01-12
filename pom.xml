@@ -25,6 +25,9 @@
         <module>commerce/shopping-cart</module>
         <module>commerce/warehouse</module>
         <module>infra/gateway</module>
+        <module>commerce/order</module>
+        <module>commerce/payment</module>
+        <module>commerce/delivery</module>
     </modules>
 
     <properties>

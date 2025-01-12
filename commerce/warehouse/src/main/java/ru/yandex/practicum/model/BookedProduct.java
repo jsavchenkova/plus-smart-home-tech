@@ -1,11 +1,13 @@
 package ru.yandex.practicum.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.UUID;
 
 @Entity
 @Table(schema = "warehouse", name = "order_booking")
+@Data
 public class BookedProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
